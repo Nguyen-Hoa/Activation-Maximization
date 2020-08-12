@@ -23,7 +23,7 @@ The necessary packages are listed in *requirements.txt*. This file was produced 
 
 ```conda create -n myenv --file requirements.txt```
 
-to have all dependencies installed.
+to have all dependencies installed in a new conda environment.
 
 ## Usage
 
@@ -44,25 +44,25 @@ Load pretrained alexnet.
 alexnet = models.alexnet(pretrained=True)
 ```
 
-Initialize a tensor with 3 channels for color, and height and width to match the size of data Alexnet was trained on, 227 by 227. with random values. We unsqueeze because PyTorch models receive data in batches, and so an additional dimmension is added. We also need the input to store gradient information to perform gradient ascent.
+Initialize a tensor with 3 channels for color, and height and width to match the size of data Alexnet was trained on, 227 by 227, with random values. We unsqueeze because PyTorch models receive data in batches, and so an additional dimmension is added. We also need the input to store gradient information to perform gradient ascent.
 
 ```python
 input = torch.randn(3, 227, 227)
-input = input.unsqueeze(0) 
-input.requires_grad_(True)
+input = input.unsqueeze(0)
 # input dimmensions become (1, 3, 227, 227)
+input.requires_grad_(True)
 ```
 
 Create a hook into the desired layer, this allows access to the activation value of the desired neuron during gradient ascent. To do so, we initialize an empty dictionary to store the layer's activations, and attach the *layer_hook()* function from *act_max_util.py* to the layer's *register_forward_hook()* call.
 
 ```python
 activation_dictionary = {}
-layer_name = 'classifier_6'
+layer_name = 'classifier_final'
 
 alexnet.classifier[-1].register_forward_hook(amu.layer_hook(activation_dictionary, layer_name))
 ```
 
-The *amu.layer_hook()* function copies the layer's activations into *activation_dictionary*. The *layer_name* is used to access the activations in the dictionary. Since we registered *amu.layer_hook()* function as a forward hook, each forward pass will overwrite the layer's activation in the dictionary. The gradient ascent loop can then perform a backward pass on the target neuron in the target layer using the activation value.
+The *amu.layer_hook()* function copies the layer's activations into *activation_dictionary*. The *layer_name* is used to access the activations in the dictionary. Since we registered *amu.layer_hook()* function to a forward hook, each forward pass will overwrite the layer's activation in the dictionary. The gradient ascent loop can then perform a backward pass on the target neuron in the target layer using the activation value.
 
 Initialize activation maximization parameters.
 
@@ -95,7 +95,7 @@ output = amu.act_max(network=alexnet,
                 )
 ```
 
-Display output. The result of *amu.act_max()* is a tensor of the same dimensions as input, so we need to squeeze it back to 3x227x227. We will use OpenCV to display the image, which does not take torch tensors, so we will convert the output to a NumPy array. This is done with the utility function *amu.image_converter()*. We then convert the final image from [0,1] to [0,255].
+Display output. The result of *amu.act_max()* is a tensor of the same dimensions as input, so we need to squeeze it back to 3x227x227. We will use OpenCV to display the image, which does not take torch tensors, so we will convert the output to a NumPy array. This is done with the utility function *amu.image_converter()*. We then convert all values in the final image from [0,1] to [0,255] for RGB channels.
 
 ```python
 final_image = amu.image_converter(output.squeeze(0))
@@ -107,3 +107,7 @@ final_image = final_image * 255
 # cv2.imwrite(path_to_save_dir + '.jpg', final_image)
 
 ```
+
+![flamingoA](./example_results/gifs/130_0.gif)
+![flamingoB](./example_results/gifs/130_5.gif)
+![flamingoC](./example_results/gifs/130_6.gif)
