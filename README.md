@@ -107,6 +107,7 @@ final_image = final_image * 255
 # cv2.imwrite(path_to_save_dir + '.jpg', final_image)
 
 ```
+gif tutorial in progress...
 
 ![flamingoA](./example_results/gifs/130_0.gif)
 ![flamingoB](./example_results/gifs/130_5.gif)
