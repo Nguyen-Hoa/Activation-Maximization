@@ -11,8 +11,6 @@ Activation maximization is a technique to visualize the features learned by a ne
 ## Files
 
 * act_max_util.py - Functions for activation maximization
-* Norm_Crop.py - Norm cropping regularizer
-* Contrib_Crop.py - Contribution cropping regularizer
 
 * requirements.txt - Package dependencies
 
