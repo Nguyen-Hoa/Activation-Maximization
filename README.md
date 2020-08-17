@@ -1,4 +1,4 @@
-# Activation-Maximization
+# Activation Maximization
 
 Activation maximization with PyTorch.
 
@@ -6,7 +6,7 @@ Regularizers from [Yosinski et al.](https://arxiv.org/abs/1506.06579)
 
 ## Overview
 
-Activation maximization is a technique to visualize the features learned by a neural network. This is done via gradient ascent, or finding pixel values that maximally activate a particular neuron.
+Activation maximization is a technique to visualize the features learned by a neural network. This is done via gradient ascent, or finding pixel values that maximally activate a particular neuron. In the following example, we will visualize a neuron in the final layer of Alexnet, trained on Imagenet, which activates for the flamingo class.
 
 ## Files
 

@@ -8,7 +8,7 @@ import cv2
 # Reading images
 from torchvision import transforms
 from PIL import Image
-from numpy import asarray
+from numpy import asarray, percentile, tile
 
 # Gaussian Kernel
 from scipy.ndimage import gaussian_filter
@@ -51,39 +51,6 @@ def get_image(img_path):
     return img
 
 """
-Load Model    
-"""
-# alexnet = models.alexnet(pretrained=True)
-# alexnet.train(False)
-# print(alexnet)
-
-"""
-Access specific network parameters: 
-
-    * grab list of networks parameters through
-        params = list(net.parameters())
-
-    * use named_parameters to find the index of desired layer weight or bias
-
-    * params[layer][unit].{grad, item, etc.}
-"""
-# params = list(alexnet.parameters())
-# print(params[0].size())
-
-## List the layer names of a network
-# print(list(map(lambda x: x[0], alexnet.named_children())))
-# print(list(map(lambda x: x[0], alexnet.classifier.named_children())))
-
-
-# for name, param in alexnet.named_parameters():
-#     if param.requires_grad:
-#         print(name)
-
-# print(alexnet.__dict__['_modules'])
-# print(alexnet.classifier[4].weight.grad)
-# .__dict__['_modules'])
-
-"""
 Create a hook into target layer
     Example to hook into classifier 6 of Alexnet:
         alexnet.classifier[6].register_forward_hook(layer_hook('classifier_6'))
@@ -92,6 +59,32 @@ def layer_hook(act_dict, layer_name):
     def hook(module, input, output):
         act_dict[layer_name] = output
     return hook
+
+"""
+Reguarlizer, crop by absolute value of pixel contribution
+"""
+def abs_contrib_crop(img, threshold=0):
+
+    abs_img = torch.abs(img)
+    smalls = abs_img < percentile(abs_img, threshold)
+    
+    return img - img*smalls
+
+"""
+Regularizer, crop if norm of pixel values below threshold
+"""
+def norm_crop(img, threshold=0):
+
+    norm = torch.norm(img, dim=0)
+    norm = norm.numpy()
+
+    # Create a binary matrix, with 1's wherever the pixel falls below threshold
+    smalls = norm < percentile(norm, threshold)
+    smalls = tile(smalls, (3,1,1))
+
+    # Crop pixels from image
+    crop = img - img*smalls
+    return crop
 
 """
 Optimizing Loop
