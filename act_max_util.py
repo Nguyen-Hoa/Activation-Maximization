@@ -13,13 +13,6 @@ from numpy import asarray, percentile, tile
 # Gaussian Kernel
 from scipy.ndimage import gaussian_filter
 
-# Norm Crop
-from Norm_Crop import norm_crop
-
-# Contrib Crop
-from Contrib_Crop import abs_contrib_crop
-
-
 # https://medium.com/analytics-vidhya/deep-dream-visualizing-the-features-learnt-by-convolutional-networks-in-pytorch-b7296ae3b7f
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 denormalize = transforms.Normalize(mean = [-0.485/0.229, -0.456/0.224, -0.406/0.225], std = [1/0.229, 1/0.224, 1/0.225] )
